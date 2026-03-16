@@ -1,0 +1,9 @@
+# Netlify config for Next.js (Beef Order App)
+# Netlify auto-detects Next.js and uses the Next.js runtime.
+
+[build]
+  command = "npm run build"
+  # Publish directory is set automatically by the Next.js runtime; do not set publish = "out" when using API routes.
+
+[build.environment]
+  NODE_VERSION = "20"

@@ -1,0 +1,10 @@
+cut_id,cut_name,category,available_qty,unit,price,status
+101,Ground Beef,Individual Cuts,40,lbs,6,
+102,Round Steak,Individual Cuts,12,lbs,7,
+103,Sirloin Steak,Individual Cuts,10,lbs,13,
+104,Porterhouse Steak,Individual Cuts,0,lbs,13,
+105,T-Bone Steak,Individual Cuts,8,lbs,13,
+106,Ribeye Steak,Individual Cuts,6,lbs,18,
+107,Roasts,Individual Cuts,15,lbs,10,
+108,New York Strip,Individual Cuts,8,lbs,17,
+109,Filet Mignon,Individual Cuts,5,lbs,22,

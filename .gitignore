@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Google service account key (never commit)
+clements-cattle-co-4edbd3cb7cde.json
+
 # vercel
 .vercel
 
