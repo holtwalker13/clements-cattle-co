@@ -110,6 +110,14 @@ export function InventoryList({
                 : "border-b-2 border-dotted border-[#efefef] bg-[var(--color-bg-card)]"
             } ${isSoldOut ? "opacity-70" : ""}`}
           >
+            {isOnSale && saleMeta && (
+              <div className="mb-2 flex w-full items-center justify-between gap-2 text-xs">
+                <span className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 font-semibold uppercase tracking-wide text-amber-900">
+                  {saleMeta.label}
+                </span>
+                <span className="text-[var(--color-muted)]">Limited time</span>
+              </div>
+            )}
             <CutIcon item={item} disabled={isSoldOut} />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -118,11 +126,6 @@ export function InventoryList({
                 >
                   {item.cut_name}
                 </span>
-                {isOnSale && (
-                  <span className="inline rounded-full bg-amber-100 px-3 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-900">
-                    Featured meat
-                  </span>
-                )}
                 {stockLabel(item.available_qty) && (
                   <span
                     className={`inline rounded px-2 py-0.5 text-xs font-medium ${stockLabelClass(item.available_qty)}`}
@@ -139,7 +142,7 @@ export function InventoryList({
                   </span>
                 )}
                 {isOnSale && (
-                  <span className="flex items-baseline gap-2">
+                  <span className="flex flex-col gap-0.5">
                     <span className="text-lg font-semibold text-amber-900">
                       {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
                         item.sale_price as number
@@ -150,11 +153,6 @@ export function InventoryList({
                       <span className="text-xs text-[var(--color-muted)] line-through">
                         {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.price)}
                         {item.unit === "lbs" ? "/lb" : "/each"}
-                      </span>
-                    )}
-                    {saleMeta && (
-                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[0.7rem] font-medium text-amber-800">
-                        {saleMeta.label}
                       </span>
                     )}
                   </span>

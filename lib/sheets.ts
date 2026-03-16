@@ -55,6 +55,9 @@ export async function getInventory(): Promise<InventoryItem[]> {
     const priceRaw = row.get("price");
     const price = priceRaw !== undefined && priceRaw !== "" ? parseNumber(priceRaw) : undefined;
     const status = String(row.get("status") ?? "").trim() || undefined;
+    const minQtyRaw = row.get("min_qty");
+    const min_qty =
+      minQtyRaw !== undefined && minQtyRaw !== "" ? parseNumber(minQtyRaw) : undefined;
     const salePriceRaw = row.get("sale_price");
     const sale_price =
       salePriceRaw !== undefined && salePriceRaw !== "" ? parseNumber(salePriceRaw) : undefined;
@@ -69,6 +72,7 @@ export async function getInventory(): Promise<InventoryItem[]> {
       status,
       sale_price,
       sale_end_date,
+      min_qty,
     });
   }
   return result;
