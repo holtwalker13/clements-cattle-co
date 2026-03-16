@@ -42,6 +42,27 @@ function stockLabelClass(available_qty: number): string {
   return "bg-[var(--color-blue)]/15 text-[#0284c7]";
 }
 
+function getSaleMeta(item: InventoryItem) {
+  if (item.sale_price == null || item.sale_price <= 0 || !item.sale_end_date) return null;
+  const end = new Date(item.sale_end_date);
+  if (Number.isNaN(end.getTime())) return null;
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  const diffMs = endDate.getTime() - startOfToday.getTime();
+  const daysLeft = Math.ceil(diffMs / (24 * 60 * 60 * 1000));
+  if (daysLeft < 0) return null;
+  let label: string;
+  if (daysLeft === 0) {
+    label = "Ends today";
+  } else if (daysLeft === 1) {
+    label = "1 day left";
+  } else {
+    label = `${daysLeft} days left`;
+  }
+  return { daysLeft, label };
+}
+
 interface InventoryListProps {
   inventory: InventoryItem[];
   queue: QueueItem[];
@@ -58,6 +79,17 @@ export function InventoryList({
   const queueByCutId = new Map(queue.map((q) => [q.cut_id, q]));
 
   const sorted = [...inventory].sort((a, b) => {
+    const aSale = getSaleMeta(a);
+    const bSale = getSaleMeta(b);
+    const aOnSale = !!aSale;
+    const bOnSale = !!bSale;
+
+    // 1) On-sale items first
+    if (aOnSale !== bOnSale) {
+      return aOnSale ? -1 : 1;
+    }
+
+    // 2) Then by category, then cut name
     if (a.category !== b.category) return a.category.localeCompare(b.category);
     return a.cut_name.localeCompare(b.cut_name);
   });
@@ -67,12 +99,16 @@ export function InventoryList({
       {sorted.map((item) => {
         const queueItem = queueByCutId.get(item.cut_id);
         const isSoldOut = item.available_qty === 0;
+        const saleMeta = getSaleMeta(item);
+        const isOnSale = !!saleMeta;
         return (
           <li
             key={item.cut_id}
-            className={`flex flex-wrap items-center justify-between gap-3 rounded-lg border-b-2 border-dotted border-[#efefef] bg-[var(--color-bg-card)] p-4 ${
-              isSoldOut ? "opacity-70" : ""
-            }`}
+            className={`flex flex-wrap items-center justify-between gap-3 rounded-lg p-4 ${
+              isOnSale
+                ? "border-2 border-dotted border-[var(--color-blue)] bg-[var(--color-bg-card)] shadow-md"
+                : "border-b-2 border-dotted border-[#efefef] bg-[var(--color-bg-card)]"
+            } ${isSoldOut ? "opacity-70" : ""}`}
           >
             <CutIcon item={item} disabled={isSoldOut} />
             <div className="min-w-0 flex-1">
@@ -82,6 +118,11 @@ export function InventoryList({
                 >
                   {item.cut_name}
                 </span>
+                {isOnSale && (
+                  <span className="inline rounded-full bg-amber-100 px-3 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-900">
+                    Featured meat
+                  </span>
+                )}
                 {stockLabel(item.available_qty) && (
                   <span
                     className={`inline rounded px-2 py-0.5 text-xs font-medium ${stockLabelClass(item.available_qty)}`}
@@ -91,10 +132,31 @@ export function InventoryList({
                 )}
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm text-[var(--color-muted)]">
-                {item.price != null && item.price > 0 && (
+                {item.price != null && item.price > 0 && !isOnSale && (
                   <span className={isSoldOut ? "text-[var(--color-muted)]" : "font-medium text-[var(--color-charcoal)]"}>
                     {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.price)}
                     {item.unit === "lbs" ? "/lb" : "/each"}
+                  </span>
+                )}
+                {isOnSale && (
+                  <span className="flex items-baseline gap-2">
+                    <span className="text-lg font-semibold text-amber-900">
+                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+                        item.sale_price as number
+                      )}
+                      {item.unit === "lbs" ? "/lb" : "/each"}
+                    </span>
+                    {item.price != null && item.price > 0 && (
+                      <span className="text-xs text-[var(--color-muted)] line-through">
+                        {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.price)}
+                        {item.unit === "lbs" ? "/lb" : "/each"}
+                      </span>
+                    )}
+                    {saleMeta && (
+                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[0.7rem] font-medium text-amber-800">
+                        {saleMeta.label}
+                      </span>
+                    )}
                   </span>
                 )}
                 {item.min_qty != null && item.min_qty > 1 && (

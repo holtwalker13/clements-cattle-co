@@ -7,6 +7,10 @@ export interface InventoryItem {
   unit: string;
   price?: number;
   status?: string;
+  /** Optional sale price for limited-time offers */
+  sale_price?: number;
+  /** ISO-ish date string for when sale ends (inclusive) */
+  sale_end_date?: string;
   /** Minimum order qty (e.g. 10 for Ground Beef 10 lb min). First add uses this, then +1. */
   min_qty?: number;
   /** Per-pack info for display (e.g. "2–3 per pack"). */

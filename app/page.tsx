@@ -153,17 +153,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]" data-beef-root style={{ minHeight: "100vh" }}>
-      {/* Banner: logo with "Beef Order" in white */}
-      <header
-        className="relative flex min-h-[180px] items-center justify-center overflow-hidden bg-[var(--color-blue)] bg-cover bg-center bg-no-repeat sm:min-h-[220px]"
-        style={{ backgroundImage: "url('/logo.jpg')" }}
-      >
-        <div className="absolute inset-0 bg-[var(--color-charcoal)]/30" aria-hidden />
-        <div className="relative z-10 text-center">
-          <h1 className="font-header text-3xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
-            Beef Order
-          </h1>
-        </div>
+      {/* Banner: full-width ranch logo */}
+      <header className="relative flex items-center justify-center bg-[var(--color-bg-card)] px-2 py-4 sm:py-6">
+        <img
+          src="/icons/logo.jpg"
+          alt="Clements Cattle Co."
+          className="h-[250px] w-auto max-w-full rounded-md object-contain shadow-sm"
+        />
       </header>
       <div className="border-b border-[var(--color-border)] bg-[var(--color-bg-card)] px-1 py-3 lg:px-4">
         <p className="text-sm text-[var(--color-muted)]">Select cuts and submit your order.</p>
@@ -301,44 +297,47 @@ export default function Home() {
         </div>
       )}
 
-      {/* Mobile: sticky queue bar - larger bar, prominent $ */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 flex items-center justify-between gap-3 border-t border-[var(--color-border)] bg-[var(--color-bg-card)] px-2 py-4 lg:hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-        <div className="flex flex-col min-w-0">
-          <span className="text-sm font-medium text-[var(--color-charcoal)]">
-            {queue.length === 0 ? "No items" : `${queue.reduce((s, i) => s + i.qty, 0)} items`}
-          </span>
-          {totalAmount > 0 && (
-            <span className="text-xl font-semibold tabular-nums text-[var(--color-charcoal)]">
-              {formatTotal(totalAmount)}
-            </span>
-          )}
-        </div>
-        <div className="flex gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={handleClearQueue}
-            disabled={queue.length === 0}
-            className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-charcoal)] disabled:opacity-50 hover:bg-[var(--color-blue)]/10"
-          >
-            <img src="/icons/trash.svg" alt="" className="h-4 w-4" aria-hidden />
-            Clear
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmitOrder}
-            disabled={queue.length === 0 || isSubmitting}
-            className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-[var(--color-blue)] px-4 py-3 min-w-[7rem] text-white disabled:opacity-50 hover:opacity-90"
-          >
-            <span className="text-sm font-medium leading-tight">
-              {queue.length === 0 || isSubmitting ? (isSubmitting ? "Submitting…" : "Submit order") : "Submit order"}
-            </span>
-            {totalAmount > 0 && !isSubmitting && (
-              <span className="text-xl font-semibold tabular-nums leading-tight">{formatTotal(totalAmount)}</span>
-            )}
-          </button>
-        </div>
-      </div>
-      <div className="h-20 lg:hidden" aria-hidden />
+      {/* Mobile: sticky queue bar - hidden until queue has items, then pinned to top */}
+      {queue.length > 0 && (
+        <>
+          <div className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between gap-3 border-b border-[var(--color-border)] bg-[var(--color-bg-card)] px-2 py-4 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] lg:hidden">
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-medium text-[var(--color-charcoal)]">
+                {`${queue.reduce((s, i) => s + i.qty, 0)} items`}
+              </span>
+              {totalAmount > 0 && (
+                <span className="text-xl font-semibold tabular-nums text-[var(--color-charcoal)]">
+                  {formatTotal(totalAmount)}
+                </span>
+              )}
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleClearQueue}
+                className="flex items-center justify-center rounded-lg border border-[var(--color-border)] p-2 text-[var(--color-charcoal)] hover:bg-[var(--color-blue)]/10"
+                aria-label="Clear queue"
+              >
+                <img src="/icons/trash.svg" alt="" className="h-4 w-4" aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmitOrder}
+                disabled={isSubmitting}
+                className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-[var(--color-blue)] px-4 py-3 min-w-[7rem] text-white disabled:opacity-50 hover:opacity-90"
+              >
+                <span className="text-sm font-medium leading-tight">
+                  {isSubmitting ? "Submitting…" : "Submit order"}
+                </span>
+                {totalAmount > 0 && !isSubmitting && (
+                  <span className="text-xl font-semibold tabular-nums leading-tight">{formatTotal(totalAmount)}</span>
+                )}
+              </button>
+            </div>
+          </div>
+          <div className="h-20 lg:hidden" aria-hidden />
+        </>
+      )}
     </div>
   );
 }
