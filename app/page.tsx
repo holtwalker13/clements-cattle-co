@@ -266,7 +266,7 @@ export default function Home() {
                     />
                   </>
                 ) : (
-                  <>
+                  <div className="animate-flydown">
                     <h2 id="checkout-title" className="font-header mb-4 text-lg text-[var(--color-charcoal)]">
                       When can you pick up?
                     </h2>
@@ -276,7 +276,7 @@ export default function Home() {
                       isSubmitting={isSubmitting}
                       error={submitError}
                     />
-                  </>
+                  </div>
                 )}
               </div>
             </div>
@@ -340,7 +340,7 @@ export default function Home() {
                   />
                 </>
               ) : (
-                <>
+                <div className="animate-flydown">
                   <h2 id="checkout-title" className="font-header mb-4 text-lg text-[var(--color-charcoal)]">
                     When can you pick up?
                   </h2>
@@ -350,7 +350,7 @@ export default function Home() {
                     isSubmitting={isSubmitting}
                     error={submitError}
                   />
-                </>
+                </div>
               )}
             </div>
           </div>

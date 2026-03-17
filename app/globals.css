@@ -15,6 +15,21 @@
   --font-body: var(--font-body), system-ui, sans-serif;
 }
 
+@keyframes flydown {
+  from {
+    transform: translateY(-16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-flydown {
+  animation: flydown 200ms ease-out both;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-charcoal);
