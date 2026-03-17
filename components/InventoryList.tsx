@@ -19,16 +19,9 @@ function CutIcon({ item, disabled }: { item: InventoryItem; disabled?: boolean }
 
   return (
     <div
-      className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--color-border)] bg-gray-100 text-[var(--color-charcoal)] ${
+      className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[30px] border-[1.5px] border-[hotpink] bg-gray-100 text-[var(--color-charcoal)] ${
         disabled ? "opacity-50 grayscale" : ""
       }`}
-      style={{
-        cornerShape: "squircle" as any,
-        borderRadius: "30px",
-        borderWidth: "1.5px",
-        borderStyle: "solid",
-        borderColor: "hotpink",
-      }}
     >
       <img
         key={slug}
