@@ -32,6 +32,18 @@ function parseNumber(value: unknown): number {
   return 0;
 }
 
+function parseNumericPrefix(value: unknown): number {
+  if (typeof value === "number" && !Number.isNaN(value)) return value;
+  if (typeof value === "string") {
+    const match = value.trim().match(/^([0-9]+(?:\.[0-9]+)?)/);
+    if (match) {
+      const n = Number(match[1]);
+      return Number.isNaN(n) ? 0 : n;
+    }
+  }
+  return 0;
+}
+
 /**
  * Load and return all inventory rows. Skips blank rows and normalizes available_qty to number.
  */
@@ -50,7 +62,7 @@ export async function getInventory(): Promise<InventoryItem[]> {
     if (!cutId) continue; // skip blank rows
     const cutName = String(row.get("cut_name") ?? "").trim();
     const category = String(row.get("category") ?? "").trim();
-    const availableQty = parseNumber(row.get("available_qty"));
+    const availableQty = parseNumericPrefix(row.get("available_qty"));
     const unit = String(row.get("unit") ?? "").trim();
     const priceRaw = row.get("price");
     const price = priceRaw !== undefined && priceRaw !== "" ? parseNumber(priceRaw) : undefined;
@@ -62,6 +74,19 @@ export async function getInventory(): Promise<InventoryItem[]> {
     const sale_price =
       salePriceRaw !== undefined && salePriceRaw !== "" ? parseNumber(salePriceRaw) : undefined;
     const sale_end_date = String(row.get("sale_end_date") ?? "").trim() || undefined;
+    const pack_countRaw = row.get("pack_count");
+    const pack_count =
+      pack_countRaw !== undefined && pack_countRaw !== "" ? parseNumber(pack_countRaw) : undefined;
+    const packOzRaw = row.get("pack_oz_each");
+    const pack_oz_each =
+      packOzRaw !== undefined && packOzRaw !== "" ? parseNumber(packOzRaw) : undefined;
+    const avgWgtRaw = row.get("avg_wgt");
+    const avg_wgt =
+      avgWgtRaw !== undefined && avgWgtRaw !== "" ? parseNumber(avgWgtRaw) : undefined;
+    let fat_ratio = String(row.get("fat_ratio") ?? "").trim() || undefined;
+    if (!fat_ratio && cutName.toLowerCase().includes("ground beef")) {
+      fat_ratio = "80/20";
+    }
     result.push({
       cut_id: cutId,
       cut_name: cutName || cutId,
@@ -72,7 +97,11 @@ export async function getInventory(): Promise<InventoryItem[]> {
       status,
       sale_price,
       sale_end_date,
+      pack_count,
+      pack_oz_each,
+      avg_wgt,
       min_qty,
+      fat_ratio,
     });
   }
   return result;

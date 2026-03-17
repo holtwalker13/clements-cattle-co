@@ -11,6 +11,14 @@ export interface InventoryItem {
   sale_price?: number;
   /** ISO-ish date string for when sale ends (inclusive) */
   sale_end_date?: string;
+   /** Descriptive fat ratio for ground beef, e.g. "80/20" */
+  fat_ratio?: string;
+  /** Steaks: number of steaks per pack (for display) */
+  pack_count?: number;
+  /** Steaks: approximate ounces per steak (for display) */
+  pack_oz_each?: number;
+  /** Roasts: approximate weight per roast in pounds (for display) */
+  avg_wgt?: number;
   /** Minimum order qty (e.g. 10 for Ground Beef 10 lb min). First add uses this, then +1. */
   min_qty?: number;
   /** Per-pack info for display (e.g. "2–3 per pack"). */

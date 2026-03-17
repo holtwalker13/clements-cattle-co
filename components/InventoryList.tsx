@@ -138,7 +138,7 @@ export function InventoryList({
                 {item.price != null && item.price > 0 && !isOnSale && (
                   <span className={isSoldOut ? "text-[var(--color-muted)]" : "font-medium text-[var(--color-charcoal)]"}>
                     {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.price)}
-                    {item.unit === "lbs" ? "/lb" : "/each"}
+                    {item.unit === "lbs" ? "/lb" : item.unit === "pkgs" ? "/pkg" : "/each"}
                   </span>
                 )}
                 {isOnSale && (
@@ -147,21 +147,42 @@ export function InventoryList({
                       {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
                         item.sale_price as number
                       )}
-                      {item.unit === "lbs" ? "/lb" : "/each"}
+                      {item.unit === "lbs" ? "/lb" : item.unit === "pkgs" ? "/pkg" : "/each"}
                     </span>
                     {item.price != null && item.price > 0 && (
                       <span className="text-xs text-[var(--color-muted)] line-through">
                         {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(item.price)}
-                        {item.unit === "lbs" ? "/lb" : "/each"}
+                        {item.unit === "lbs" ? "/lb" : item.unit === "pkgs" ? "/pkg" : "/each"}
                       </span>
                     )}
                   </span>
                 )}
-                {item.min_qty != null && item.min_qty > 1 && (
-                  <span className="text-[var(--color-muted)]">{item.min_qty} lb min</span>
+                {/* Ground beef: show min and fat ratio */}
+                {item.cut_name.toLowerCase().includes("ground beef") && (
+                  <>
+                    {item.min_qty != null && item.min_qty > 0 && (
+                      <span className="text-[var(--color-muted)]">
+                        {item.min_qty} lb min
+                      </span>
+                    )}
+                    {item.fat_ratio && (
+                      <span className="text-[var(--color-muted)]">
+                        {item.fat_ratio} lean-to-fat
+                      </span>
+                    )}
+                  </>
                 )}
-                {item.per_pack && (
-                  <span className="text-[var(--color-muted)]">{item.per_pack}</span>
+                {/* Steaks: pack description when available */}
+                {item.pack_count != null && item.pack_oz_each != null && item.category.toLowerCase().includes("individual") && (
+                  <span className="text-[var(--color-muted)]">
+                    Pack of {item.pack_count} · {item.pack_oz_each} oz steaks
+                  </span>
+                )}
+                {/* Roasts: approximate weight */}
+                {item.category.toLowerCase().includes("roast") && item.avg_wgt != null && item.avg_wgt > 0 && (
+                  <span className="text-[var(--color-muted)]">
+                    approx. {item.avg_wgt} lb each
+                  </span>
                 )}
                 <span>
                   {item.available_qty} {item.unit} available
