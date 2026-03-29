@@ -7,7 +7,7 @@ import { QueueSummary } from "@/components/QueueSummary";
 import { CustomerForm, type CustomerFormData } from "@/components/CustomerForm";
 import { PickupStep, type PickupChoice } from "@/components/PickupStep";
 import { OrderSuccessScreen } from "@/components/OrderSuccessScreen";
-import { getCutIconSlug } from "@/lib/cut-icons";
+import { getCutIconPath } from "@/lib/cut-icons";
 
 function formatTotal(dollars: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(dollars);
@@ -388,14 +388,14 @@ export default function Home() {
                 {Array.from(new Map(queue.map((q) => [q.cut_id, q])).values())
                   .slice(0, 3)
                   .map((item) => {
-                    const slug = getCutIconSlug({ cut_id: item.cut_id, cut_name: item.cut_name });
+                    const iconSrc = getCutIconPath({ cut_id: item.cut_id, cut_name: item.cut_name });
                     return (
                       <div
                         key={item.cut_id}
                         className="h-8 w-8 rounded-full border-2 border-white bg-gray-100"
                       >
                         <img
-                          src={`/icons/cuts/${slug}.svg`}
+                          src={iconSrc}
                           alt=""
                           className="h-full w-full rounded-full object-cover"
                           aria-hidden

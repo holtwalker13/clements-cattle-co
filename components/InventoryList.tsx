@@ -13,7 +13,7 @@ function stockLabel(available_qty: number): string {
 
 function CutIcon({ item, disabled }: { item: InventoryItem; disabled?: boolean }) {
   const slug = getCutIconSlug(item);
-  const path = `/icons/cuts/${slug}.svg`;
+  const path = getCutIconPath(item);
   const [failed, setFailed] = useState(false);
   const src = failed ? "/icons/cuts/default.svg" : path;
 

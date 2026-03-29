@@ -20,7 +20,15 @@ const CUT_NAME_TO_ICON: Record<string, string> = {
   "t-bone": "tbone",
   tbone: "tbone",
   "new york strip": "sirloin 2",
-  roasts: "tritip",
+  roasts: "chuck roast",
+  "arm roast": "arm roast",
+  "chuck roast": "chuck roast",
+  "rump roast": "rump roast",
+  "sirloin tip roast": "sirloin tip roast",
+  "sirloin tip": "sirloin tip roast",
+  "beef ribs": "beef ribs",
+  "beef rib": "beef ribs",
+  ribs: "beef ribs",
 };
 
 export function getCutIconSlug(item: { cut_id: string; cut_name: string }): string {
@@ -28,7 +36,8 @@ export function getCutIconSlug(item: { cut_id: string; cut_name: string }): stri
   return CUT_NAME_TO_ICON[normalized] ?? "default";
 }
 
+/** Public URL for the cut icon (encodes spaces in filenames like `arm roast.svg`). */
 export function getCutIconPath(item: { cut_id: string; cut_name: string }): string {
   const slug = getCutIconSlug(item);
-  return `/icons/cuts/${slug}.svg`;
+  return `/icons/cuts/${encodeURIComponent(slug)}.svg`;
 }
