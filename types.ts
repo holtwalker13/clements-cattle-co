@@ -58,6 +58,10 @@ export interface ActiveOrderRow {
   order_status: string;
   pickup_date?: string;
   pickup_time_slot?: string;
+  /** Same total on every line of the order (for Cash App / reconciliation). */
+  order_total?: number;
+  /** Paste into Cash App memo so payment matches the order. */
+  payment_memo?: string;
 }
 
 /** Inventory conflict when server re-validates */

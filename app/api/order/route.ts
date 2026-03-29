@@ -5,6 +5,8 @@ import {
   updateInventoryQuantities,
 } from "@/lib/sheets";
 import { MOCK_INVENTORY } from "@/lib/mock-data";
+import { computeOrderTotalDollars } from "@/lib/order-pricing";
+import { buildCashAppPayUrl, buildPaymentMemo } from "@/lib/cashapp";
 import type { OrderPayload, ActiveOrderRow, InventoryItem, InventoryConflict } from "@/types";
 
 const useMock = !process.env.GOOGLE_SHEET_ID?.trim();
@@ -114,6 +116,16 @@ export async function POST(request: NextRequest) {
     const created_at = new Date().toISOString();
     const order_status = "pending";
 
+    const order_total = computeOrderTotalDollars(items, inventoryByCutId);
+    const payment_memo = buildPaymentMemo(
+      order_id,
+      items.map((item) => {
+        const inv = inventoryByCutId.get(item.cut_id)!;
+        return { cut_name: inv.cut_name, qty: item.qty, unit: inv.unit };
+      })
+    );
+    const cashapp_url = buildCashAppPayUrl(order_total);
+
     const rows: ActiveOrderRow[] = [];
     const decrements: Record<string, number> = {};
     for (const item of items) {
@@ -129,6 +141,8 @@ export async function POST(request: NextRequest) {
         qty: item.qty,
         unit: inv.unit,
         order_status,
+        order_total,
+        payment_memo,
         ...(pickup_date && { pickup_date }),
         ...(pickup_time_slot && { pickup_time_slot }),
       });
@@ -147,7 +161,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { order_id, message: "Order placed successfully." },
+      {
+        order_id,
+        message: "Order placed successfully.",
+        order_total,
+        payment_memo,
+        cashapp_url,
+      },
       { status: 201 }
     );
   } catch (err) {

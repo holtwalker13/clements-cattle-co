@@ -26,6 +26,9 @@ export default function Home() {
     orderId: string;
     pickupDate: string;
     pickupTimeSlot: string;
+    orderTotal: number;
+    paymentMemo: string;
+    cashAppUrl: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mockMode, setMockMode] = useState(false);
@@ -137,10 +140,14 @@ export default function Home() {
           setSubmitError(data.error ?? "Failed to place order. Please try again.");
           return;
         }
+        const oid = typeof data.order_id === "string" ? data.order_id : "";
         setSuccessOrder({
-          orderId: data.order_id ?? "",
+          orderId: oid,
           pickupDate: pickup.pickup_date,
           pickupTimeSlot: pickup.pickup_time_slot,
+          orderTotal: typeof data.order_total === "number" ? data.order_total : 0,
+          paymentMemo: typeof data.payment_memo === "string" ? data.payment_memo : oid,
+          cashAppUrl: typeof data.cashapp_url === "string" ? data.cashapp_url : "",
         });
         setQueue([]);
         setShowCustomerForm(false);
@@ -369,6 +376,9 @@ export default function Home() {
               orderId={successOrder.orderId}
               pickupDate={successOrder.pickupDate}
               pickupTimeSlot={successOrder.pickupTimeSlot}
+              orderTotal={successOrder.orderTotal}
+              paymentMemo={successOrder.paymentMemo}
+              cashAppUrl={successOrder.cashAppUrl}
               onDismiss={() => setSuccessOrder(null)}
             />
           </div>
