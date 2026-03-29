@@ -32,6 +32,21 @@ function parseNumber(value: unknown): number {
   return 0;
 }
 
+/** Prices from Sheets are often "$6", "$17.00", or "6 USD" — plain Number() would be NaN → 0. */
+function parseMoney(value: unknown): number | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === "number" && !Number.isNaN(value)) return value;
+  if (typeof value === "string") {
+    const s = value.trim();
+    if (!s) return undefined;
+    const cleaned = s.replace(/[$,\s]/g, "").replace(/usd/gi, "").trim();
+    if (!cleaned) return undefined;
+    const n = Number(cleaned);
+    return Number.isNaN(n) ? undefined : n;
+  }
+  return undefined;
+}
+
 function parseNumericPrefix(value: unknown): number {
   if (typeof value === "number" && !Number.isNaN(value)) return value;
   if (typeof value === "string") {
@@ -65,14 +80,13 @@ export async function getInventory(): Promise<InventoryItem[]> {
     const availableQty = parseNumericPrefix(row.get("available_qty"));
     const unit = String(row.get("unit") ?? "").trim();
     const priceRaw = row.get("price");
-    const price = priceRaw !== undefined && priceRaw !== "" ? parseNumber(priceRaw) : undefined;
+    const price = parseMoney(priceRaw);
     const status = String(row.get("status") ?? "").trim() || undefined;
     const minQtyRaw = row.get("min_qty");
     const min_qty =
       minQtyRaw !== undefined && minQtyRaw !== "" ? parseNumber(minQtyRaw) : undefined;
     const salePriceRaw = row.get("sale_price");
-    const sale_price =
-      salePriceRaw !== undefined && salePriceRaw !== "" ? parseNumber(salePriceRaw) : undefined;
+    const sale_price = parseMoney(salePriceRaw);
     const sale_end_date = String(row.get("sale_end_date") ?? "").trim() || undefined;
     const pack_countRaw = row.get("pack_count");
     const pack_count =
